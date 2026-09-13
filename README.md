@@ -9,3 +9,7 @@ See [the design brief](docs/design.md) for the project scope.
 ## Browser study
 
 Run `python3 -m http.server 4173 --directory prototype` and open http://localhost:4173 to study net deformation.
+
+## Generate a mesh
+
+Run `python3 tools/generate_goal_net.py` to produce OBJ and material files in `assets/`.
