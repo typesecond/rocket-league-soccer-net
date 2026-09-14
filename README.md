@@ -13,3 +13,5 @@ Run `python3 -m http.server 4173 --directory prototype` and open http://localhos
 ## Generate a mesh
 
 Run `python3 tools/generate_goal_net.py` to produce OBJ and material files in `assets/`.
+
+The default generated mesh and materials are committed under `assets/`.
