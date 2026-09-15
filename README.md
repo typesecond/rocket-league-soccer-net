@@ -15,3 +15,7 @@ Run `python3 -m http.server 4173 --directory prototype` and open http://localhos
 Run `python3 tools/generate_goal_net.py` to produce OBJ and material files in `assets/`.
 
 The default generated mesh and materials are committed under `assets/`.
+
+## Blender and UDK
+
+The FBX export script and proposed import workflow are described in [docs/udk-integration.md](docs/udk-integration.md).
