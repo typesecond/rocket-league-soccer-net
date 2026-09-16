@@ -19,3 +19,7 @@ The default generated mesh and materials are committed under `assets/`.
 ## Blender and UDK
 
 The FBX export script and proposed import workflow are described in [docs/udk-integration.md](docs/udk-integration.md).
+
+## Windows staging
+
+See [tools/README-Windows.md](tools/README-Windows.md) for the PowerShell staging helper.
