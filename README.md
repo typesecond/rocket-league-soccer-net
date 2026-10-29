@@ -1,81 +1,62 @@
 # Rocket League Soccer Net
 
-A custom-map-first prototype for a more realistic soccer-style goal net in
-Rocket League.
+Procedural goal and net geometry for a Rocket League custom-map project.
+Python generates the mesh and materials, Blender exports FBX, and a PowerShell
+script stages the asset for UDK. Width, height, depth, and net subdivisions are
+configurable.
 
-## Current status
+The exported asset is static. A separate browser study handles visual net
+deformation from shot speed and impact position.
 
-Includes a procedural OBJ generator, generated mesh and materials, a Blender
-FBX export script, a Windows staging helper, and a browser deformation study.
-The OBJ output is reproducible from source. Blender export, UDK import, game
-collision, scoring, and in-game deformation still need end-to-end validation.
-There is no finished Rocket League map or Workshop release in this repository.
+## Generate the asset
 
-## Project direction
-
-The first version will be a standalone goal asset with a visible net mesh,
-simple gameplay-safe collision, and a short net deformation animation when a
-goal is scored. Integration will target offline/custom-map workflows rather
-than online game injection.
-
-## MVP
-
-- regulation-style goal frame and net volume;
-- blue/orange material variants;
-- controllable net depth and grid spacing;
-- visual deformation with deterministic settle time;
-- collision that does not snag cars or balls;
-- export/package instructions for a custom Rocket League map.
-
-## Planned milestones
-
-1. Procedural standalone mesh prototype.
-2. Material and animation test scene.
-3. Custom-map integration.
-4. Goal-event-driven deformation.
-5. Packaging, compatibility notes, and playtest checklist.
-
-See [docs/design.md](docs/design.md) for the current implementation brief.
-
-## Run the prototype
-
-The first milestone is a dependency-free browser sandbox:
-
-```sh
-cd prototype
-python3 -m http.server 4173
-```
-
-Open <http://localhost:4173> and use **Trigger goal** to preview the net
-deformation. The controls change net depth, grid spacing, shot speed, and
-impact position.
-
-This prototype is intentionally separate from Rocket League. It gives us a
-place to tune the deformation behavior before packaging a custom-map asset.
-
-See [docs/workshop.md](docs/workshop.md) for the later Steam Workshop
-publishing path and account requirements.
-
-The game-facing workflow is documented in
-[docs/udk-integration.md](docs/udk-integration.md). Generate the first
-importable goal asset with:
+Requires Python 3. FBX export also requires Blender on the command line.
 
 ```sh
 python3 tools/generate_goal_net.py
+blender --background --python tools/generate_goal_net_blender.py -- --output assets/goal_net.fbx
 ```
 
-For the Windows/UDK integration workflow, see
-[tools/README-Windows.md](tools/README-Windows.md) and run
-`tools/Prepare-SoccerNet.ps1` from PowerShell.
+The Python generator writes `assets/goal_net.obj` and `assets/goal_net.mtl`.
+The Blender script builds the geometry directly and writes `assets/goal_net.fbx`.
+Both use separate `GoalFrame` and `NetRope` materials.
+
+Defaults are 7.32 m wide, 2.44 m high, and 2 m deep, with 18 columns and 8 rows.
+The OBJ contains 736 vertices and 552 quad faces. Override the dimensions and
+subdivisions with `--width`, `--height`, `--depth`, `--columns`, and `--rows`.
+The OBJ generator also accepts `--output` to select an output directory.
+
+## UDK workflow
+
+On Windows, stage the FBX in an existing UDK installation:
+
+```powershell
+.\tools\Prepare-SoccerNet.ps1 -UdkRoot 'C:\UDK\UDK-2015-02' -OpenEditor
+```
+
+Import it into `SoccerNetAssets`, assign the materials, and keep decorative net
+geometry separate from gameplay collision. The integration plan retains the
+map's existing scoring triggers and collision volumes.
+
+See the [UDK import guide](docs/udk-integration.md) and
+[Windows setup](tools/README-Windows.md) for the full workflow.
+
+## Deformation study
+
+```sh
+python3 -m http.server 4173 --directory prototype
+```
+
+Open http://localhost:4173 and select **Trigger goal**. The Canvas renderer
+varies displacement with shot speed and distance from the impact, then returns
+the net to its starting shape. Depth, grid spacing, and impact coordinates can
+be adjusted in the browser.
 
 ## Source checks
 
-GitHub Actions checks Python and JavaScript syntax and regenerates the OBJ/MTL
-files to compare them with the committed assets. It does not run Blender, UDK,
-PowerShell, or Rocket League.
+CI checks Python and JavaScript syntax, regenerates the OBJ/MTL files, and
+compares them against the committed assets.
 
-## Publication history
+[Design](docs/design.md) · [Workshop plan](docs/workshop.md)
 
-The September 11–17, 2026 commit dates are a reconstructed publication timeline,
-not original development timestamps. See [docs/history.md](docs/history.md).
-
+Commit dates are reconstructed; see [repository history](docs/history.md).
